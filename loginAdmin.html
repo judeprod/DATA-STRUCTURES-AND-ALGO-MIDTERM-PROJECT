@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Console</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: rgb(240, 230, 230); 
+      display:flex; 
+      justify-content:center; 
+      align-items:center; 
+      height:100vh; 
+    }
+    .box { 
+      background: rgb(37, 34, 34); 
+      padding: 25px; 
+      border-radius: 15px; 
+      width: 300px; 
+      box-shadow: 0 4px 6px rgba(180, 156, 20, 0.2); 
+    }
+    input { 
+      width: 95%; 
+      padding: 10px; 
+      margin: 15px 0; 
+      border: 1px solid blanchedalmond; 
+      border-radius: 5px; 
+    }
+    .password-box {
+      display: flex;
+      align-items: center;
+    }
+    .password-box input {
+      flex: 1;
+    }
+    .password-box button {
+      margin-left: 5px;
+      padding: 10px;
+      background: #ddd;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button.login-btn { 
+      width: 100%; 
+      padding: 10px; 
+      color: whitesmoke; 
+      background: goldenrod;
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
+    .forgot {
+      text-align: right;
+      margin-top: 5px;
+    }
+    .forgot a {
+      color: gray;
+      font-size: 11px;
+      text-decoration: none;
+    }
+    .forgot a:hover {
+      text-decoration: underline;
+    }
+    .box h2 {
+      color: whitesmoke;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Admin Console</h2>
+    <input type="text" id="username" placeholder="Username">
+
+    <div class="password-box">
+      <input type="password" id="password" placeholder="Password">
+      <button type="button" onclick="togglePassword()">👁</button>
+    </div>
+
+    <div class="forgot">
+      <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+    </div>
+
+    <button class="login-btn" onclick="login()">Sign In</button>
+    <p id="error" style="color:goldenrod ; font-size:12px;"></p>
+  </div>
+
+  <script>
+    function login() {
+      let user = document.getElementById("username").value;
+      let pass = document.getElementById("password").value;
+
+      if(user === "foodAdmin03" && pass === "3456"){
+        window.location.href = "admin.html"; 
+      } else {
+        document.getElementById("error").innerText = "Invalid login!";
+      }
+    }
+
+    function togglePassword() {
+      let inputPassword = document.getElementById("password");
+      if (inputPassword.type === "password") {
+        inputPassword.type = "text";
+      } else {
+        inputPassword.type = "password";
+      }
+    }
+
+    function forgotPassword() {
+      alert("Please get in touch with the admin team for password recovery.");
+    }
+  </script>
+</body>
+</html>
