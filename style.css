@@ -20,6 +20,14 @@ h1{
   color: #ffffff;
 }
 
+h2{
+  color: #ffffff;
+}
+
+h3{
+  color: #ffffff;
+}
+
 .item {
   border: 5px solid #f2ff00;
   border-radius: 8px;
@@ -51,11 +59,12 @@ h1{
 
 .item h3 {
   margin: 0;
-  color: #000000;
+  color: #ffffff;
 }
 
 .item p {
   margin: 8px 0;
+  color: #ffffff;
 }
 
 .price {
@@ -84,6 +93,7 @@ h1{
   border-top: 2px solid #eee;
   margin-top: 20px;
   padding-top: 15px;
+  color: #ffffff;
 }
 
 #place-order-btn {
