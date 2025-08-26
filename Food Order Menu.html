@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Food Order Menu</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+  <h1>Food Menu</h1>
+
+  <!-- Burger -->
+  <div class="item" data-price="8" data-name="Cheese Burger">
+    <img src="burger.jpg" alt="Cheese Burger" />
+    <h3>Cheese Burger</h3>
+    <p>Juicy beef patty with cheese, lettuce, onion, pickle, and tomato.</p>
+    <div class="quantity-controls">
+      <button class="qty-btn" data-action="decrease">-</button>
+      <input type="number" min="0" value="0" />
+      <button class="qty-btn" data-action="increase">+</button>
+    </div>
+    <p class="price">$8.00</p>
+  </div>
+
+  <!-- Fries -->
+  <div class="item" data-price="3" data-name="French Fries">
+    <img src="fries.jpg" alt="French Fries" />
+    <h3>French Fries</h3>
+    <p>Crispy golden fries with ketchup.</p>
+    <div class="quantity-controls">
+      <button class="qty-btn" data-action="decrease">-</button>
+      <input type="number" min="0" value="0" />
+      <button class="qty-btn" data-action="increase">+</button>
+    </div>
+    <p class="price">$3.00</p>
+  </div>
+
+  <!-- Drink -->
+  <div class="item" data-price="2" data-name="Soft Drink">
+    <img src="soda.jpg" alt="Soft Drink" />
+    <h3>Soft Drink</h3>
+    <p>Refreshing cold soda.</p>
+    <div class="quantity-controls">
+      <button class="qty-btn" data-action="decrease">-</button>
+      <input type="number" min="0" value="0" />
+      <button class="qty-btn" data-action="increase">+</button>
+    </div>
+    <p class="price">$2.00</p>
+  </div>
+
+  <!-- Combo Meal -->
+  <div class="item" data-price="12" data-name="Combo Meal">
+    <img src="combo.jpg" alt="Combo Meal" />
+    <h3>Combo Meal</h3>
+    <p>Burger + Fries + Drink for a discounted price.</p>
+    <div class="quantity-controls">
+      <button class="qty-btn" data-action="decrease">-</button>
+      <input type="number" min="0" value="0" />
+      <button class="qty-btn" data-action="increase">+</button>
+    </div>
+    <p class="price">$12.00</p>
+  </div>
+
+  <!-- Order Summary -->
+  <div class="order-summary">
+    <h2>Your Order</h2>
+    <ul id="order-list">
+      <li>No items selected.</li>
+    </ul>
+    <h3>Total: $<span id="order-total">0.00</span></h3>
+    <button id="place-order-btn" disabled>Place Order</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
