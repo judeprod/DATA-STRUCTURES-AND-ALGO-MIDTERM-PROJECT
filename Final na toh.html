@@ -967,6 +967,8 @@
                 console.log('Stack contents (top to bottom):', this.toArray());
             }
         }
+        // fpor restock
+        let restockHistory = new Stack();
 
         // Priority Queue implementation using LinkedList
         class PriorityQueue {
@@ -1124,7 +1126,6 @@
         let orderCounter = 1;
         let salesChart;
         let currentCustomizations = {}; // Store customizations per item
-        let restockHistory = new Stack();
         document.addEventListener('DOMContentLoaded', () => loadState());
 
         // -- Data persistence --
