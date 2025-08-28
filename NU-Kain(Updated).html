@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NU KAIN - Food Ordering System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background: #f8fafc;
+        }
+
+        /* Customer Menu Styles */
+        .customer-container {
+            max-width: 900px;
+            margin: auto;
+            background: #161e2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(136, 118, 118, 0.879);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .customer-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #ffffff;
+        }
+
+        .customer-container h2, .customer-container h3 {
+            color: #ffffff;
+        }
+
+        .item {
+            border: 5px solid #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            text-align: left;
+        }
+
+        .item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgb(0, 0, 0);
+        }
+
+        .item img {
+            max-width: 140px;
+            border-radius: 12px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item h3 {
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .item p {
+            margin: 8px 0;
+            color: #ffffff;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .quantity-controls button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .quantity-controls button:hover {
+            background: #ffffff;
+        }
+
+        .quantity-controls input {
+            width: 60px;
+            text-align: center;
+            margin: 0 5px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .order-summary {
+            border-top: 2px solid #eee;
+            margin-top: 20px;
+            padding-top: 15px;
+            color: #ffffff;
+        }
+
+        #place-order-btn {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #place-order-btn:disabled {
+            background: #484545;
+            cursor: not-allowed;
+        }
+
+        #place-order-btn:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        /* Login Styles */
+        .login-container {
+            background: rgb(240, 230, 230);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: rgb(37, 34, 34);
+            padding: 25px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(180, 156, 20, 0.2);
+        }
+
+        .login-box h2 {
+            color: whitesmoke;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+        }
+
+        .login-box input {
+            width: 95%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid blanchedalmond;
+            border-radius: 5px;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .password-box input {
+            flex: 1;
+        }
+
+        .password-box button {
+            margin-left: 5px;
+            padding: 10px;
+            background: #ddd;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            color: whitesmoke;
+            background: goldenrod;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .forgot {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .forgot a {
+            color: gray;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .forgot a:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Panel Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+
+        .main-content {
+            background: #f8fafc;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #d1d5db;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 700px) {
+            .item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .item img {
+                max-width: 100px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                z-index: 1000;
+                width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Customer Menu View -->
+    <div id="customer-view" class="customer-container">
+        <h1><i class="fas fa-hamburger mr-3 text-yellow-400"></i>
+            NU KAIN - Food Menu</h1>
+        <div class="flex justify-between items-center mb-6">
+            <button id="admin-login-btn" class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg">
+                <i class="fas fa-user-shield mr-2"></i>Admin Login
+            </button>
+            <div id="order-status" class="text-white font-semibold"></div>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="item" data-price="70" data-name="Cheese Burger">
+            <img src="https://s3-eu-central-1.amazonaws.com/www.burger-king.ng/wp-media-folder-burger-king-nigeria//home/ubuntu/wordpress/web/app/uploads/sites/12/Whopper-Sandw-1024x659.jpg" alt="Cheese Burger" class="w-40 h-28 rounded-lg object-cover">
+            <div class="item-details">
+                <h3>Cheese Burger</h3>
+                <p>Juicy beef patty with cheese, lettuce, onion, pickle, and tomato.</p>
+                <div class="quantity-controls">
+                    <button class="qty-btn" data-action="decrease">-</button>
+                    <input type="number" min="0" value="0" readonly />
+                    <button class="qty-btn" data-action="increase">+</button>
+                </div>
+            </div>
+            <p class="price">₱70.00</p>
+        </div>
+
+        <div class="item" data-price="100" data-name="French Fries">
+            <img src="https://latourangelle.com/cdn/shop/articles/hikynvl8pjkjqhvpnok6_1200x1200.jpg?v=1619198610" alt="French Fries" class="w-40 h-28 rounded-lg object-cover">
+            <div class="item-details">
+                <h3>French Fries</h3>
+                <p>Crispy golden fries with ketchup.</p>
+                <div class="quantity-controls">
+                    <button class="qty-btn" data-action="decrease">-</button>
+                    <input type="number" min="0" value="0" readonly />
+                    <button class="qty-btn" data-action="increase">+</button>
+                </div>
+            </div>
+            <p class="price">₱100.00</p>
+        </div>
+
+        <div class="item" data-price="50" data-name="Soft Drink">
+            <img src="https://media.istockphoto.com/id/134434456/photo/red-disposable-cup-for-beverages-with-straw.jpg?s=612x612&w=0&k=20&c=Vga22ZTo0WIdyWJgaAbtf-v-NB9EixArmVBO1KMrmB4=" alt="Soft Drink" class="w-40 h-28 rounded-lg object-cover">
+            <div class="item-details">
+                <h3>Soft Drink</h3>
+                <p>Refreshing cold soda.</p>
+                <div class="quantity-controls">
+                    <button class="qty-btn" data-action="decrease">-</button>
+                    <input type="number" min="0" value="0" readonly />
+                    <button class="qty-btn" data-action="increase">+</button>
+                </div>
+            </div>
+            <p class="price">₱50.00</p>
+        </div>
+
+        <div class="item" data-price="250" data-name="Combo Meal">
+            <img src="https://images.theconversation.com/files/410720/original/file-20210712-46002-1ku5one.jpg?ixlib=rb-4.1.0&rect=0%2C0%2C1000%2C696&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip" alt="Combo Meal" class="w-40 h-28 rounded-lg object-cover">
+            <div class="item-details">
+                <h3>Combo Meal</h3>
+                <p>Burger + Fries + Drink for a discounted price.</p>
+                <div class="quantity-controls">
+                    <button class="qty-btn" data-action="decrease">-</button>
+                    <input type="number" min="0" value="0" readonly />
+                    <button class="qty-btn" data-action="increase">+</button>
+                </div>
+            </div>
+            <p class="price">₱250.00</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2>Your Order</h2>
+            <ul id="order-list">
+                <li>No items selected.</li>
+            </ul>
+            <h3>Total: ₱<span id="order-total">0.00</span></h3>
+            <button id="place-order-btn" disabled>Place Order</button>
+        </div>
+    </div>
+
+    <!-- Admin Login View -->
+    <div id="login-view" class="login-container hidden">
+        <div class="login-box">
+            <h2>Admin Console</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username">
+                <div class="password-box">
+                    <input type="password" id="password" placeholder="Password">
+                    <button type="button" onclick="togglePassword()">👁</button>
+                </div>
+                <div class="forgot">
+                    <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            <div class="mt-3 text-xs text-gray-400">
+                <p>Default Credentials:</p>
+                <p><b>Username:</b> admin | <b>Password:</b> admin123</p>
+                <p><b>Username:</b> foodAdmin03 | <b>Password:</b> 3456</p>
+            </div>
+            <p id="error" style="color:goldenrod; font-size:12px;"></p>
+            <button type="button" onclick="showCustomerView()" class="w-full mt-3 bg-gray-600 text-white py-2 px-4 rounded-lg text-sm">
+                Back to Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Panel View -->
+    <div id="admin-view" class="hidden">
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar text-white p-6">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-hamburger mr-3 text-yellow-400"></i>
+                        NU KAIN
+                    </h1>
+                    <p class="text-gray-400 text-sm mt-1">Admin Control Panel</p>
+                </div>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="nav-item active" data-tab="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-item" data-tab="orders">
+                        <i class="fas fa-clipboard-list"></i>
+                        Orders
+                    </a>
+                    <a href="#" class="nav-item" data-tab="inventory">
+                        <i class="fas fa-warehouse"></i>
+                        Inventory
+                    </a>
+                </nav>
+                
+                <div class="mt-8 pt-8 border-t border-gray-700">
+                    <div>
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-gray-400">Restaurant Manager</p>
+                    </div>
+                    <button id="logout-btn" class="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Header -->
+                <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800" id="current-tab-title">Dashboard</h2>
+                    <div class="flex items-center space-x-4 relative">
+                        <button id="notification-bell" onclick="toggleNotifications()" class="p-2 text-gray-600 hover:text-gray-800 relative">
+                            <i class="fas fa-bell"></i>
+                            <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                        <div id="notification-dropdown" class="hidden absolute right-0 top-12 w-64 bg-white shadow-lg rounded-lg p-3 z-50 border">
+                            <h4 class="font-semibold text-gray-800 mb-2">Notifications</h4>
+                            <div id="notification-list" class="text-sm text-gray-700 space-y-2">
+                                <p class="text-gray-500 text-center">No notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="p-8">
+                    <!-- Dashboard Tab -->
+                    <div id="dashboard" class="tab-content active">
+                        <!-- Stats Overview -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Total Orders</p>
+                                        <p class="text-2xl font-bold text-gray-800" id="total-orders-count">0</p>
+                                        <p class="text-sm text-green-600 flex items-center">
+                                            <i class="fas fa-arrow-up mr-1"></i> Orders today
+                                        </p>
+                                    </div>
+                                    <div class="bg-blue-100 p-3 rounded-full">
+                                        <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Pending Orders</p>
+                                        <p class="text-2xl font-bold text-orange-600" id="pending-orders-count">0</p>
+                                        <p class="text-sm text-gray-600">Waiting for preparation</p>
+                                    </div>
+                                    <div class="bg-orange-100 p-3 rounded-full">
+                                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Low Stock Items</p>
+                                        <p class="text-2xl font-bold text-red-600" id="low-stock-count">0</p>
+                                        <p class="text-sm text-gray-600">Need restocking</p>
+                                    </div>
+                                    <div class="bg-red-100 p-3 rounded-full">
+                                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders & Inventory Alerts -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Recent Orders -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+                                    <a href="#" class="text-blue-600 text-sm hover:underline" onclick="switchTab('orders')">View all</a>
+                                </div>
+                                <div id="recent-orders-list" class="space-y-4">
+                                    <p class="text-gray-500 text-center">No recent orders</p>
+                                </div>
+                            </div>
+
+                            <!-- Inventory Alerts -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-800">Inventory Alerts</h3>
+                                    <a href="#" class="text-blue-600 text-sm hover:underline" onclick="switchTab('inventory')">Manage</a>
+                                </div>
+                                <div id="inventory-alerts-list" class="space-y-4">
+                                    <p class="text-gray-500 text-center">All items in stock</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Tab -->
+                    <div id="orders" class="tab-content">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">Order Management</h3>
+                                <div class="flex space-x-4">
+                                    <select id="order-filter" class="border rounded-lg px-3 py-2">
+                                        <option value="">All Status</option>
+                                        <option value="new">New</option>
+                                        <option value="preparing">Preparing</option>
+                                        <option value="ready">Ready</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                    <button onclick="refreshOrders()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 px-4">Order ID</th>
+                                            <th class="text-left py-3 px-4">Customer</th>
+                                            <th class="text-left py-3 px-4">Items</th>
+                                            <th class="text-left py-3 px-4">Total</th>
+                                            <th class="text-left py-3 px-4">Status</th>
+                                            <th class="text-left py-3 px-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orders-table-body">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-8 text-gray-500">No orders found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Tab -->
+                    <div id="inventory" class="tab-content">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">Inventory Management</h3>
+                                <button onclick="showAddItemModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Add Item
+                                </button>
+                            </div>
+
+                            <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Inventory items will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+
+        // Linked List
+        class OrderNode {
+            constructor(order) {
+                this.order = order;
+                this.next = null;
+            }
+        }
+        class OrderLinkedList {
+            constructor() { this.head = null; }
+            addOrder(order) {
+                const newNode = new OrderNode(order);
+                if (!this.head) this.head = newNode;
+                else {
+                    let current = this.head;
+                    while (current.next) current = current.next;
+                    current.next = newNode;
+                }
+            }
+        }
+
+        // Queue
+        class OrderQueue {
+            constructor() { this.items = []; }
+            enqueue(order) { this.items.push(order); }
+            dequeue() { return this.items.shift(); }
+            isEmpty() { return this.items.length === 0; }
+        }
+
+        // Stack
+        class RestockStack {
+            constructor() { this.stack = []; }
+            push(restock) { this.stack.push(restock); }
+            pop() { return this.stack.pop(); }
+            isEmpty() { return this.stack.length === 0; }
+        }
+
+        // CREATE INSTANCES
+        let orderList = new OrderLinkedList();
+        let pendingQueue = new OrderQueue();
+        let restockHistory = new RestockStack();
+
+        // Application State
+        let currentView = 'customer';
+        let orders = [];
+        let inventory = {
+            'Beef Patties': { current: 25, minimum: 20, status: 'good' },
+            'Cheese Slices': { current: 18, minimum: 15, status: 'good' },
+            'Lettuce': { current: 30, minimum: 10, status: 'good' },
+            'Buns': { current: 45, minimum: 20, status: 'good' },
+            'French Fries': { current: 38, minimum: 15, status: 'good' },
+            'Soda Syrup': { current: 22, minimum: 12, status: 'good' }
+        };
+        let orderCounter = 1;
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            updateInventoryStatus();
+            updateDashboardStats();
+            renderInventory();
+            renderOrders();
+            
+            // Event Listeners
+            document.getElementById('admin-login-btn').addEventListener('click', showLoginView);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('place-order-btn').addEventListener('click', placeOrder);
+            
+            // Login form submission - add after DOM is loaded
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    login();
+                });
+            }
+
+            // Also add Enter key listeners to individual input fields
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            if (usernameInput) {
+                usernameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+            
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tab = this.getAttribute('data-tab');
+                    switchTab(tab);
+                });
+            });
+
+            // Quantity controls
+            document.querySelectorAll('.qty-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    let value = parseInt(input.value);
+                    if (this.dataset.action === 'increase') {
+                        value++;
+                    } else if (this.dataset.action === 'decrease' && value > 0) {
+                        value--;
+                    }
+                    input.value = value;
+                    updateOrderSummary();
+                });
+            });
+
+            // Close notification dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const notificationDropdown = document.getElementById('notification-dropdown');
+                const notificationBell = document.getElementById('notification-bell');
+                
+                if (!notificationBell.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // View Management
+        function showCustomerView() {
+            currentView = 'customer';
+            document.getElementById('customer-view').classList.remove('hidden');
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.body.style.background = '#f2ff00';
+        }
+
+        function showLoginView() {
+            currentView = 'login';
+            document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.body.style.background = 'rgb(240, 230, 230)';
+        }
+
+        function showAdminView() {
+            currentView = 'admin';
+            document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.remove('hidden');
+            document.body.style.background = '#f8fafc';
+            updateDashboardStats();
+        }
+
+        // Login Functions
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error');
+
+            if (username === 'admin' && password === 'admin123') {
+                errorElement.textContent = '';
+                showAdminView();
+            } else if (username === 'foodAdmin03' && password === '3456') {
+                errorElement.textContent = '';
+                showAdminView();
+            } else {
+                errorElement.textContent = 'Invalid login credentials!';
+            }
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function forgotPassword() {
+            alert('Please contact the admin team for password recovery.\nDefault credentials:\nUsername: admin\nPassword: admin123');
+        }
+
+        function logout() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('error').textContent = '';
+            showCustomerView();
+        }
+
+        // Order Management
+        function updateOrderSummary() {
+            const items = document.querySelectorAll('.item');
+            const orderList = document.getElementById('order-list');
+            const orderTotal = document.getElementById('order-total');
+            const placeOrderBtn = document.getElementById('place-order-btn');
+
+            let total = 0;
+            let orderItems = [];
+
+            items.forEach(item => {
+                const qty = parseInt(item.querySelector('input').value);
+                if (qty > 0) {
+                    const name = item.dataset.name;
+                    const price = parseFloat(item.dataset.price);
+                    total += qty * price;
+                    orderItems.push(`<li>${qty} × ${name} - ₱${(qty * price).toFixed(2)}</li>`);
+                }
+            });
+
+            orderList.innerHTML = orderItems.length ? orderItems.join('') : '<li>No items selected.</li>';
+            orderTotal.textContent = total.toFixed(2);
+            placeOrderBtn.disabled = total === 0;
+        }
+
+        function placeOrder() {
+            const items = document.querySelectorAll('.item');
+            let orderItems = [];
+            let total = 0;
+
+            // Map menu items to inventory requirements
+            const inventoryMapping = {
+                'Cheese Burger': ['Beef Patties', 'Cheese Slices', 'Lettuce', 'Buns'],
+                'French Fries': ['French Fries'],
+                'Soft Drink': ['Soda Syrup'],
+                'Combo Meal': ['Beef Patties', 'Cheese Slices', 'Lettuce', 'Buns', 'French Fries', 'Soda Syrup']
+            };
+
+            // Collect order
+            items.forEach(item => {
+                const qty = parseInt(item.querySelector('input').value);
+                if (qty > 0) {
+                    const name = item.dataset.name;
+                    const price = parseFloat(item.dataset.price);
+                    total += qty * price;
+                    orderItems.push({ name, quantity: qty, price, subtotal: qty * price });
+                }
+            });
+
+            if (orderItems.length === 0) return;
+
+            // Check inventory before placing order
+            for (let orderItem of orderItems) {
+                const requiredItems = inventoryMapping[orderItem.name] || [];
+                for (let invName of requiredItems) {
+                    if (!inventory[invName] || inventory[invName].current < orderItem.quantity) {
+                        alert(`⚠️ Sorry, "${orderItem.name}" is currently unavailable because we're out of "${invName}". Please check back later.`);
+                        return; // ❌ stop order
+                    }
+                }
+            }
+
+            // Proceed if inventory is okay
+            const order = {
+                id: `ORD-${String(orderCounter).padStart(5, '0')}`,
+                customer: `Customer ${orderCounter}`,
+                items: orderItems,
+                total: total,
+                status: 'new',
+                timestamp: new Date()
+            };
+
+            // Add order to Linked List and Queue
+            orderList.addOrder(order);
+            pendingQueue.enqueue(order);
+
+            orders.unshift(order);
+            orderCounter++;
+
+            // Deduct from inventory
+            orderItems.forEach(orderItem => {
+                updateInventoryForOrder(orderItem.name, orderItem.quantity);
+            });
+
+            // Reset form
+            items.forEach(item => {
+                item.querySelector('input').value = 0;
+            });
+            updateOrderSummary();
+
+            // Success message
+            const statusDiv = document.getElementById('order-status');
+            statusDiv.textContent = `Order ${order.id} placed successfully!`;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+            }, 3000);
+
+            updateDashboardStats();
+            renderOrders();
+        }
+
+        function updateInventoryForOrder(itemName, quantity) {
+            // Map menu items to inventory items
+            const inventoryMapping = {
+                'Cheese Burger': ['Beef Patties', 'Cheese Slices', 'Lettuce', 'Buns'],
+                'French Fries': ['French Fries'],
+                'Soft Drink': ['Soda Syrup'],
+                'Combo Meal': ['Beef Patties', 'Cheese Slices', 'Lettuce', 'Buns', 'French Fries', 'Soda Syrup']
+            };
+
+            const requiredItems = inventoryMapping[itemName] || [];
+            requiredItems.forEach(inventoryItem => {
+                if (inventory[inventoryItem]) {
+                    inventory[inventoryItem].current -= quantity;
+                    if (inventory[inventoryItem].current < 0) {
+                        inventory[inventoryItem].current = 0;
+                    }
+                }
+            });
+
+            updateInventoryStatus();
+            renderInventory();
+        }
+
+        // Admin Panel Functions
+        function switchTab(tabName) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            // Update title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'orders': 'Order Management',
+                'inventory': 'Inventory Management'
+            };
+            document.getElementById('current-tab-title').textContent = titles[tabName] || 'Dashboard';
+        }
+
+        function updateDashboardStats() {
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(order => order.status === 'new' || order.status === 'preparing').length;
+            const lowStockItems = Object.values(inventory).filter(item => item.status === 'low').length;
+
+            document.getElementById('total-orders-count').textContent = totalOrders;
+            document.getElementById('pending-orders-count').textContent = pendingOrders;
+            document.getElementById('low-stock-count').textContent = lowStockItems;
+            document.getElementById('notification-count').textContent = pendingOrders + lowStockItems;
+
+            renderRecentOrders();
+            renderInventoryAlerts();
+        }
+
+        function renderRecentOrders() {
+            const recentOrdersList = document.getElementById('recent-orders-list');
+            const recentOrders = orders.slice(0, 3);
+
+            if (recentOrders.length === 0) {
+                recentOrdersList.innerHTML = '<p class="text-gray-500 text-center">No recent orders</p>';
+                return;
+            }
+
+            const statusColors = {
+                'new': 'bg-blue-100 text-blue-800',
+                'preparing': 'bg-yellow-100 text-yellow-800',
+                'ready': 'bg-green-100 text-green-800',
+                'completed': 'bg-gray-100 text-gray-800'
+            };
+
+            const ordersHtml = recentOrders.map(order => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div>
+                        <p class="font-medium">#${order.id}</p>
+                        <p class="text-sm text-gray-600">${order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}</p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full ${statusColors[order.status] || statusColors.new}">
+                        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                </div>
+            `).join('');
+
+            recentOrdersList.innerHTML = ordersHtml;
+        }
+
+        function renderInventoryAlerts() {
+            const alertsList = document.getElementById('inventory-alerts-list');
+            const alertItems = Object.entries(inventory).filter(([name, item]) => item.status === 'low');
+
+            if (alertItems.length === 0) {
+                alertsList.innerHTML = '<p class="text-gray-500 text-center">All items in stock</p>';
+                return;
+            }
+
+            const alertsHtml = alertItems.map(([name, item]) => `
+                <div class="flex justify-between items-center p-3 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                    <div>
+                        <p class="font-medium">${name}</p>
+                        <p class="text-sm text-gray-600">Only ${item.current} units left</p>
+                    </div>
+                    <span class="text-red-600 text-sm font-semibold">LOW</span>
+                </div>
+            `).join('');
+
+            alertsList.innerHTML = alertsHtml;
+        }
+
+        function renderOrders() {
+            const tableBody = document.getElementById('orders-table-body');
+            const filterValue = document.getElementById('order-filter').value;
+
+            let filteredOrders = orders;
+            if (filterValue) {
+                filteredOrders = orders.filter(order => order.status === filterValue);
+            }
+
+            if (filteredOrders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No orders found</td></tr>';
+                return;
+            }
+
+            const statusColors = {
+                'new': 'bg-blue-100 text-blue-800',
+                'preparing': 'bg-yellow-100 text-yellow-800',
+                'ready': 'bg-green-100 text-green-800',
+                'completed': 'bg-gray-100 text-gray-800'
+            };
+
+            const ordersHtml = filteredOrders.map(order => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="py-3 px-4">#${order.id}</td>
+                    <td class="py-3 px-4">${order.customer}</td>
+                    <td class="py-3 px-4">${order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}</td>
+                    <td class="py-3 px-4">₱${order.total.toFixed(2)}</td>
+                    <td class="py-3 px-4">
+                        <span class="text-xs px-2 py-1 rounded-full ${statusColors[order.status] || statusColors.new}">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        ${order.status === 'new' ? `
+                            <button onclick="updateOrderStatus('${order.id}', 'preparing')" class="text-blue-600 hover:text-blue-800 mr-2" title="Start Preparing">
+                                <i class="fas fa-utensils"></i>
+                            </button>
+                        ` : ''}
+                        ${order.status === 'preparing' ? `
+                            <button onclick="updateOrderStatus('${order.id}', 'ready')" class="text-green-600 hover:text-green-800 mr-2" title="Mark as Ready">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        ${order.status === 'ready' ? `
+                            <button onclick="updateOrderStatus('${order.id}', 'completed')" class="text-gray-600 hover:text-gray-800 mr-2" title="Complete Order">
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                        ` : ''}
+                        <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${order.status === 'completed' ? `
+                            <button onclick="deleteOrder('${order.id}')" class="text-red-600 hover:text-red-800" title="Delete Order">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            tableBody.innerHTML = ordersHtml;
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                renderOrders();
+                updateDashboardStats();
+            }
+        }
+
+        function viewOrderDetails(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                const itemsList = order.items.map(item => 
+                    `${item.quantity}x ${item.name} - ₱${item.subtotal.toFixed(2)}`
+                ).join('\n');
+                
+                alert(`Order Details:\n\nOrder ID: #${order.id}\nCustomer: ${order.customer}\nStatus: ${order.status.toUpperCase()}\n\nItems:\n${itemsList}\n\nTotal: ₱${order.total.toFixed(2)}\nTime: ${order.timestamp.toLocaleString()}`);
+            }
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm('Are you sure you want to delete this order?')) {
+                const index = orders.findIndex(o => o.id === orderId);
+                if (index > -1) {
+                    orders.splice(index, 1);
+                    renderOrders();
+                    updateDashboardStats();
+                }
+            }
+        }
+
+        function refreshOrders() {
+            renderOrders();
+            updateDashboardStats();
+        }
+
+        // Inventory Management
+        function updateInventoryStatus() {
+            Object.keys(inventory).forEach(itemName => {
+                const item = inventory[itemName];
+                if (item.current <= item.minimum * 0.5) {
+                    item.status = 'low';
+                } else if (item.current <= item.minimum) {
+                    item.status = 'medium';
+                } else {
+                    item.status = 'good';
+                }
+            });
+        }
+
+        function renderInventory() {
+            const inventoryGrid = document.getElementById('inventory-grid');
+            
+            const statusColors = {
+                'low': 'bg-red-100 text-red-800',
+                'medium': 'bg-yellow-100 text-yellow-800',
+                'good': 'bg-green-100 text-green-800'
+            };
+
+            const inventoryHtml = Object.entries(inventory).map(([name, item]) => `
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="font-semibold text-gray-800">${name}</h4>
+                        <span class="text-xs px-2 py-1 rounded-full ${statusColors[item.status]}">
+                            ${item.status.toUpperCase()}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">Current Stock: ${item.current} units</p>
+                    <p class="text-sm text-gray-600 mb-3">Minimum Level: ${item.minimum} units</p>
+                    <div class="flex space-x-2">
+                        <button onclick="restockItem('${name}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                            Restock
+                        </button>
+                        <button onclick="editItem('${name}')" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors">
+                            Edit
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            inventoryGrid.innerHTML = inventoryHtml;
+        }
+
+        function restockItem(itemName) {
+            const quantity = prompt(`How many ${itemName} would you like to add to inventory?`);
+            if (quantity && !isNaN(quantity) && parseInt(quantity) > 0) {
+                inventory[itemName].current += parseInt(quantity);
+                restockHistory.push({ item: itemName, quantity: parseInt(quantity) });
+                updateInventoryStatus();
+                renderInventory();
+                updateDashboardStats();
+            }
+        }
+
+        function editItem(itemName) {
+            const item = inventory[itemName];
+            const newCurrent = prompt(`Current stock for ${itemName}:`, item.current);
+            const newMinimum = prompt(`Minimum level for ${itemName}:`, item.minimum);
+            
+            if (newCurrent !== null && !isNaN(newCurrent) && parseInt(newCurrent) >= 0) {
+                inventory[itemName].current = parseInt(newCurrent);
+            }
+            
+            if (newMinimum !== null && !isNaN(newMinimum) && parseInt(newMinimum) >= 0) {
+                inventory[itemName].minimum = parseInt(newMinimum);
+            }
+            
+            updateInventoryStatus();
+            renderInventory();
+            updateDashboardStats();
+        }
+
+        function showAddItemModal() {
+            const itemName = prompt('Enter item name:');
+            if (!itemName) return;
+            
+            const currentStock = prompt('Enter current stock:');
+            if (!currentStock || isNaN(currentStock)) return;
+            
+            const minimumLevel = prompt('Enter minimum level:');
+            if (!minimumLevel || isNaN(minimumLevel)) return;
+            
+            inventory[itemName] = {
+                current: parseInt(currentStock),
+                minimum: parseInt(minimumLevel),
+                status: 'good'
+            };
+            
+            updateInventoryStatus();
+            renderInventory();
+            updateDashboardStats();
+        }
+
+        // Notification Management
+        function toggleNotifications(event) {
+            if (event) {
+                event.stopPropagation(); // Prevent event bubbling
+            }
+            
+            const dropdown = document.getElementById('notification-dropdown');
+            const isHidden = dropdown.classList.contains('hidden');
+            
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                renderNotifications();
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notification-list');
+            let notifications = [];
+
+            // Check for pending orders
+            const pendingOrders = orders.filter(o => o.status === 'new' || o.status === 'preparing');
+            if (pendingOrders.length > 0) {
+                notifications.push(`⚡ You have ${pendingOrders.length} pending order${pendingOrders.length > 1 ? 's' : ''}!`);
+            }
+
+            // Check for low stock items
+            Object.entries(inventory).forEach(([name, item]) => {
+                if (item.status === 'low') {
+                    notifications.push(`📦 Low stock: ${name} (${item.current} left)`);
+                }
+            });
+
+            list.innerHTML = notifications.length
+                ? notifications.map(msg => `<p class="py-1">${msg}</p>`).join('')
+                : '<p class="text-gray-500 text-center">No notifications</p>';
+        }
+
+        function undoRestock() {
+            if (!restockHistory.isEmpty()) {
+                const last = restockHistory.pop();
+                inventory[last.item].current -= last.quantity;
+                if (inventory[last.item].current < 0) inventory[last.item].current = 0;
+                updateInventoryStatus();
+                renderInventory();
+                updateDashboardStats();
+                alert(`Undid last restock of ${last.quantity} ${last.item}`);
+            } else {
+                alert("No restocks to undo!");
+            }
+        }
+
+        // Filter orders
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderFilter = document.getElementById('order-filter');
+            if (orderFilter) {
+                orderFilter.addEventListener('change', renderOrders);
+            }
+        });
+        
+    </script>
+</body>
+</html>
