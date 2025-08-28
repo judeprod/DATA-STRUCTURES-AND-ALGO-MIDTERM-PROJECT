@@ -2043,6 +2043,20 @@
             count.textContent = totalNotifications;
             count.style.display = totalNotifications > 0 ? 'flex' : 'none';
         }
+        
+        function undoRestock() {
+            if (!restockHistory.isEmpty()) {
+                const last = restockHistory.pop();
+                inventory[last.item].current -= last.quantity;
+                if (inventory[last.item].current < 0) inventory[last.item].current = 0;
+                updateInventoryStatus();
+                renderInventory();
+                updateDashboardStats();
+                alert(`Undid last restock of ${last.quantity} ${last.item}`);
+            } else {
+                alert("No restocks to undo!");
+            }
+        }
 
         // -- Chart --
         function initializeChart() {
