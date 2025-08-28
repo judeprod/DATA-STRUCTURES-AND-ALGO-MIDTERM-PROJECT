@@ -1413,6 +1413,20 @@
                         <button onclick="showRestockModal('${name}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">Restock</button>
                     </div>
                 </div>`).join('');
+
+            
+             if (!document.getElementById('undo-restock-btn')) {
+        const undoBtn = document.createElement('button');
+        undoBtn.id = 'undo-restock-btn';
+        undoBtn.className = 'mt-6 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center justify-center';
+        undoBtn.innerHTML = '<i class="fas fa-undo mr-2"></i>Undo Last Restock';
+        
+        // Append the button after the inventory grid container
+        grid.parentElement.appendChild(undoBtn);
+        
+        // Attach event listener
+        undoBtn.addEventListener('click', undoRestock);
+    }
         }
 
         function login() { 
