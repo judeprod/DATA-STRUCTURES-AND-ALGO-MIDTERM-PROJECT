@@ -1877,6 +1877,9 @@
                     const qty = parseInt(document.getElementById('restockQty').value);
                     if (!isNaN(qty) && qty > 0) {
                         inventory[itemName].current += qty;
+                    // restockhistory
+                        restockHistory.push({ item: itemName, quantity: qty }); 
+                        
                         saveState();
                         renderAll();
                         showModal('Success', `Added ${qty} units to ${itemName}. New stock: ${inventory[itemName].current}`);
