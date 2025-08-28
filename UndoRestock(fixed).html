@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NU KAIN - Food Ordering System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background: #f8fafc;
+        }
+
+        /* Customer Menu Styles */
+        .customer-container {
+            max-width: 900px;
+            margin: auto;
+            background: #161e2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(136, 118, 118, 0.879);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .customer-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #ffffff;
+        }
+
+        .customer-container h2, .customer-container h3 {
+            color: #ffffff;
+        }
+
+        .item {
+            border: 5px solid #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .item.sold-out {
+            opacity: 0.5;
+        }
+
+        .sold-out-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+
+        .item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgb(0, 0, 0);
+        }
+
+        .item img {
+            max-width: 140px;
+            height: 112px;
+            border-radius: 12px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item h3 {
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .item p {
+            margin: 8px 0;
+            color: #ffffff;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+
+        .quantity-controls button {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: 2px solid #4f46e5;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .quantity-controls button:hover:not(:disabled) {
+            background: #3730a3;
+            border-color: #3730a3;
+            transform: translateY(-1px);
+        }
+
+        .quantity-controls button:disabled {
+            background: #6b7280;
+            border-color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .quantity-controls input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .customize-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+        }
+
+        .customize-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .customize-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .order-summary {
+            border-top: 2px solid #eee;
+            margin-top: 20px;
+            padding-top: 15px;
+            color: #ffffff;
+        }
+
+        #place-order-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        #place-order-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #place-order-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Login Styles */
+        .login-container {
+            background: rgb(240, 230, 230);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: rgb(37, 34, 34);
+            padding: 25px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(180, 156, 20, 0.2);
+        }
+
+        .login-box h2 {
+            color: whitesmoke;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+        }
+
+        .login-box input {
+            width: 95%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid blanchedalmond;
+            border-radius: 5px;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .password-box input {
+            flex: 1;
+        }
+
+        .password-box button {
+            margin-left: 5px;
+            padding: 10px;
+            background: #ddd;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 40px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            color: whitesmoke;
+            background: goldenrod;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .forgot {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .forgot a {
+            color: gray;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .forgot a:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Panel Styles */
+        .dashboard-grid {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            width: 280px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.hidden-mobile {
+            transform: translateX(-100%);
+        }
+
+        .main-content {
+            background: #f8fafc;
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Mobile overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #d1d5db;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+
+        .customization-option {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border: 2px solid #d1d5db;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .customization-option:hover {
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
+
+        .customization-option.selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .customization-stack-display {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .stack-item {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .stack-item.base {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .remove-customization {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .remove-customization:hover {
+            background: #dc2626;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Mobile Design */
+        @media (max-width: 768px) {
+            .item {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .item img {
+                max-width: 100px;
+            }
+
+            .quantity-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            /* Mobile admin panel */
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .customer-container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .customer-container h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                padding: 16px;
+                margin: 10px;
+            }
+        }
+
+        /* Ingredient selection */
+        .ingredient-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ingredient-controls input {
+            width: 60px;
+            text-align: center;
+            padding: 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+
+        .add-ingredient {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-ingredient:hover {
+            background: #059669;
+        }
+
+        .remove-ingredient {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-ingredient:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div id="customer-view" class="customer-container">
+        <h1><i class="fas fa-hamburger mr-3 text-yellow-400"></i>
+            NU KAIN - Food Menu</h1>
+        <div class="flex justify-between items-center mb-6">
+            <button id="admin-login-btn" class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg">
+                <i class="fas fa-user-shield mr-2"></i>Admin Login
+            </button>
+            <div id="order-status" class="text-white font-semibold"></div>
+        </div>
+
+        <div id="menu-items-container">
+        </div>
+
+        <div class="order-summary">
+            <h2>Your Order</h2>
+            <ul id="order-list">
+                <li>No items selected.</li>
+            </ul>
+            <h3>Total: ₱<span id="order-total">0.00</span></h3>
+            <button id="place-order-btn" disabled>Place Order</button>
+        </div>
+    </div>
+
+    <div id="login-view" class="login-container hidden">
+        <div class="login-box">
+            <h2>Admin Console</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username">
+                <div class="password-box">
+                    <input type="password" id="password" placeholder="Password">
+                    <button type="button" id="toggle-password-btn" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="forgot">
+                    <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            <div class="mt-3 text-xs text-gray-400">
+                <p>Default Credentials:</p>
+                <p><b>Username:</b> admin | <b>Password:</b> admin123</p>
+            </div>
+            <p id="error" style="color:goldenrod; font-size:12px;"></p>
+            <button type="button" onclick="showCustomerView()" class="w-full mt-3 bg-gray-600 text-white py-2 px-4 rounded-lg text-sm">
+                Back to Menu
+            </button>
+        </div>
+    </div>
+
+    <div id="admin-view" class="hidden">
+        <div class="dashboard-grid">
+            <!-- Sidebar overlay for mobile -->
+            <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+            
+            <aside id="sidebar" class="sidebar">
+                <div class="mb-8 p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-hamburger mr-3 text-yellow-400"></i>
+                                NU KAIN
+                            </h1>
+                            <p class="text-gray-400 text-sm mt-1">Admin Control Panel</p>
+                        </div>
+                        <button id="sidebar-close" class="md:hidden text-gray-400 hover:text-white" onclick="toggleSidebar()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <nav class="space-y-2 px-6">
+                    <a href="#" class="nav-item active" data-tab="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-item" data-tab="orders">
+                        <i class="fas fa-clipboard-list"></i>
+                        Orders
+                    </a>
+                    <a href="#" class="nav-item" data-tab="inventory">
+                        <i class="fas fa-warehouse"></i>
+                        Inventory
+                    </a>
+                    <a href="#" class="nav-item" data-tab="menu">
+                        <i class="fas fa-book-open"></i>
+                        Menu
+                    </a>
+                </nav>
+                
+                <div class="mt-8 pt-8 border-t border-gray-700 px-6">
+                    <button id="logout-btn" class="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </aside>
+
+            <main id="main-content" class="main-content">
+                <header class="bg-white shadow-sm px-4 md:px-8 py-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                         <button id="sidebar-toggle" class="md:hidden p-2 text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-bars fa-lg"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold text-gray-800" id="current-tab-title">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4 relative">
+                        <button id="notification-bell" onclick="toggleNotifications()" class="p-2 text-gray-600 hover:text-gray-800 relative">
+                            <i class="fas fa-bell"></i>
+                            <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                        <div id="notification-dropdown" class="hidden absolute right-0 top-12 w-64 bg-white shadow-lg rounded-lg p-3 z-50 border">
+                            <h4 class="font-semibold text-gray-800 mb-2">Notifications</h4>
+                            <div id="notification-list" class="text-sm text-gray-700 space-y-2">
+                                <p class="text-gray-500 text-center">No notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="p-4 md:p-8">
+                    <div id="dashboard" class="tab-content active">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div><p class="text-sm text-gray-600">Total Earnings</p><p class="text-2xl font-bold" id="total-earnings">₱0.00</p></div>
+                                    <div class="bg-green-100 p-3 rounded-full"><i class="fas fa-peso-sign text-green-600 text-xl"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div><p class="text-sm text-gray-600">Active Orders</p><p class="text-2xl font-bold" id="total-orders-count">0</p></div>
+                                    <div class="bg-blue-100 p-3 rounded-full"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div><p class="text-sm text-gray-600">Pending Orders</p><p class="text-2xl font-bold text-orange-600" id="pending-orders-count">0</p></div>
+                                    <div class="bg-orange-100 p-3 rounded-full"><i class="fas fa-clock text-orange-600 text-xl"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div><p class="text-sm text-gray-600">Completed Orders</p><p class="text-2xl font-bold text-green-600" id="completed-orders-count">0</p></div>
+                                    <div class="bg-green-100 p-3 rounded-full"><i class="fas fa-check-circle text-green-600 text-xl"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Orders by Priority</h3>
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="orders" class="tab-content">
+                        <div class="bg-white rounded-xl shadow-sm border p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold">Order Management</h3>
+                                <div>
+                                    <button id="show-history-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"><i class="fas fa-history mr-2"></i>View History</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead><tr class="border-b"><th class="text-left p-2">Order ID</th><th class="text-left p-2">Priority</th><th class="text-left p-2">Items</th><th class="text-left p-2">Total</th><th class="text-left p-2">Status</th><th class="text-left p-2">Actions</th></tr></thead>
+                                    <tbody id="orders-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="inventory" class="tab-content">
+                        <div class="bg-white rounded-xl shadow-sm border p-6">
+                            <h3 class="text-lg font-semibold mb-6">Inventory Management</h3>
+                            <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="menu" class="tab-content">
+                        <div class="bg-white rounded-xl shadow-sm border p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold">Menu Management</h3>
+                                <button onclick="showMenuItemModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"><i class="fas fa-plus mr-2"></i>Add Menu Item</button>
+                            </div>
+                            <div id="menu-management-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-lg font-bold mb-4"></h3>
+            <p id="modal-message" class="mb-6"></p>
+            <div id="modal-form-container" class="mb-4"></div>
+            <div class="flex justify-end space-x-3">
+                <button id="modal-cancel-btn" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg transition-colors">Cancel</button>
+                <button id="modal-confirm-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // -- Data structure implementation --
+
+        class Node {
+            constructor(data) {
+                this.data = data;
+                this.next = null;
+            }
+        }
+
+        class LinkedList {
+            constructor() {
+                this.head = null;
+                this.tail = null;
+                this.size = 0;
+            }
+
+            isEmpty() {
+                return this.size === 0;
+            }
+
+            addToHead(data) {
+                const newNode = new Node(data);
+                if (this.isEmpty()) {
+                    this.head = this.tail = newNode;
+                } else {
+                    newNode.next = this.head;
+                    this.head = newNode;
+                }
+                this.size++;
+            }
+
+            addToTail(data) {
+                const newNode = new Node(data);
+                if (this.isEmpty()) {
+                    this.head = this.tail = newNode;
+                } else {
+                    this.tail.next = newNode;
+                    this.tail = newNode;
+                }
+                this.size++;
+            }
+
+            removeFromHead() {
+                if (this.isEmpty()) return null;
+                const data = this.head.data;
+                this.head = this.head.next;
+                if (!this.head) this.tail = null;
+                this.size--;
+                return data;
+            }
+
+            removeFromTail() {
+                if (this.isEmpty()) return null;
+                if (this.head === this.tail) {
+                    const data = this.head.data;
+                    this.head = this.tail = null;
+                    this.size--;
+                    return data;
+                }
+                
+                let current = this.head;
+                while (current.next !== this.tail) {
+                    current = current.next;
+                }
+                const data = this.tail.data;
+                this.tail = current;
+                this.tail.next = null;
+                this.size--;
+                return data;
+            }
+
+            findNodeById(id) {
+                let current = this.head;
+                while (current) {
+                    if (current.data.id === id) return current;
+                    current = current.next;
+                }
+                return null;
+            }
+
+            removeNodeById(id) {
+                if (this.isEmpty()) return null;
+                
+                if (this.head.data.id === id) {
+                    return this.removeFromHead();
+                }
+                
+                let current = this.head;
+                while (current.next && current.next.data.id !== id) {
+                    current = current.next;
+                }
+                
+                if (current.next) {
+                    const data = current.next.data;
+                    if (current.next === this.tail) {
+                        this.tail = current;
+                    }
+                    current.next = current.next.next;
+                    this.size--;
+                    return data;
+                }
+                return null;
+            }
+
+            toArray() {
+                const array = [];
+                let current = this.head;
+                while (current) {
+                    array.push(current.data);
+                    current = current.next;
+                }
+                return array;
+            }
+
+            traverse() {
+                const array = this.toArray();
+                console.log('LinkedList contents:', array);
+                return array;
+            }
+        }
+
+        // Stack implementation using LinkedList
+        class Stack {
+            constructor() {
+                this.list = new LinkedList();
+            }
+
+            push(data) {
+                this.list.addToHead(data);
+                console.log('Stack PUSH:', data);
+            }
+
+            pop() {
+                if (this.list.isEmpty()) {
+                    console.error("Stack Error: Pop from empty stack.");
+                    return null;
+                }
+                const data = this.list.removeFromHead();
+                console.log('Stack POP:', data);
+                return data;
+            }
+
+            peek() {
+                return this.list.isEmpty() ? null : this.list.head.data;
+            }
+
+            isEmpty() {
+                return this.list.isEmpty();
+            }
+
+            size() {
+                return this.list.size;
+            }
+
+            toArray() {
+                return this.list.toArray();
+            }
+
+            display() {
+                console.log('Stack contents (top to bottom):', this.toArray());
+            }
+        }
+        // fpor restock
+        let restockHistory = new Stack();
+
+        // Priority Queue implementation using LinkedList
+        class PriorityQueue {
+            constructor() {
+                this.list = new LinkedList();
+            }
+
+            enqueue(data) {
+                const newNode = new Node(data);
+                
+                // If queue is empty or new item has higher priority (lower number = higher priority)
+                if (this.list.isEmpty() || data.priority < this.list.head.data.priority) {
+                    this.list.addToHead(data);
+                    console.log('Queue ENQUEUE (high priority):', data);
+                    return;
+                }
+                
+                // Find correct position based on priority
+                let current = this.list.head;
+                while (current.next && data.priority >= current.next.data.priority) {
+                    current = current.next;
+                }
+                
+                // Insert the new node
+                newNode.next = current.next;
+                current.next = newNode;
+                if (!newNode.next) {
+                    this.list.tail = newNode;
+                }
+                this.list.size++;
+                console.log('Queue ENQUEUE:', data);
+            }
+
+            dequeue() {
+                if (this.list.isEmpty()) {
+                    console.error("Queue Error: Dequeue from empty queue.");
+                    return null;
+                }
+                const data = this.list.removeFromHead();
+                console.log('Queue DEQUEUE:', data);
+                return data;
+            }
+
+            peek() {
+                return this.list.isEmpty() ? null : this.list.head.data;
+            }
+
+            isEmpty() {
+                return this.list.isEmpty();
+            }
+
+            size() {
+                return this.list.size;
+            }
+
+            toArray() {
+                return this.list.toArray();
+            }
+
+            findNodeById(id) {
+                return this.list.findNodeById(id);
+            }
+
+            removeNodeById(id) {
+                return this.list.removeNodeById(id);
+            }
+
+            display() {
+                console.log('Queue contents (front to back):', this.toArray());
+            }
+        }
+
+        // Task Management System Integration
+        class Task {
+            constructor(id, name, description, priority = 3) {
+                this.id = id;
+                this.name = name;
+                this.description = description;
+                this.priority = Math.max(1, Math.min(3, priority)); // Ensure 1-3 range
+                this.completed = false;
+                this.createdAt = new Date();
+            }
+
+            markCompleted() {
+                this.completed = true;
+                console.log(`Task "${this.name}" marked as completed.`);
+            }
+
+            toString() {
+                const priorityMap = { 1: 'HIGH', 2: 'MEDIUM', 3: 'LOW' };
+                return `Task[${this.id}]: ${this.name} (${priorityMap[this.priority]}) - ${this.completed ? 'COMPLETED' : 'PENDING'}`;
+            }
+        }
+
+        class TaskManager {
+            constructor() {
+                this.taskStack = new Stack();        // For hierarchical management
+                this.taskQueue = new PriorityQueue(); // For processing order
+                this.completedTasks = [];
+            }
+
+            createTask(name, description, priority = 3) {
+                const taskId = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const task = new Task(taskId, name, description, priority);
+                
+                // Add to both stack (for hierarchy) and queue (for processing)
+                this.taskStack.push(task);
+                this.taskQueue.enqueue(task);
+                
+                console.log('TaskManager: Created new task:', task.toString());
+                return task;
+            }
+
+            processNextTask() {
+                const task = this.taskQueue.dequeue();
+                if (task) {
+                    task.markCompleted();
+                    this.completedTasks.push(task);
+                    // Also remove from stack if it's the top item
+                    if (this.taskStack.peek() && this.taskStack.peek().id === task.id) {
+                        this.taskStack.pop();
+                    }
+                    return task;
+                }
+                return null;
+            }
+
+            removeTaskFromHierarchy() {
+                const task = this.taskStack.pop();
+                if (task) {
+                    // Also remove from queue
+                    this.taskQueue.removeNodeById(task.id);
+                    console.log('TaskManager: Removed task from hierarchy:', task.toString());
+                }
+                return task;
+            }
+
+            displayStatus() {
+                console.log('\n=== TASK MANAGER STATUS ===');
+                console.log('Hierarchy (Stack):');
+                this.taskStack.display();
+                console.log('Processing Queue:');
+                this.taskQueue.display();
+                console.log('Completed Tasks:', this.completedTasks.length);
+            }
+        }
+
+        // -- Application state and initialization  --
+        let menuItems = [];
+        let inventory = {};
+        let orderQueue = new PriorityQueue();
+        let customizationStack = new Stack(); // Stack for heirarchy
+        let taskManager = new TaskManager(); // Task management system
+        let orderHistory = [];
+        let orderCounter = 1;
+        let salesChart;
+        let currentCustomizations = {}; // Store customizations per item
+        document.addEventListener('DOMContentLoaded', () => loadState());
+
+        // -- Data persistence --
+        function saveState() {
+            const appState = {
+                menuItems: menuItems,
+                inventory: inventory,
+                orderQueue: orderQueue.toArray(),
+                orderHistory: orderHistory,
+                orderCounter: orderCounter,
+                currentCustomizations: currentCustomizations
+            };
+            
+            console.log('App state saved to memory:', appState);
+        }
+
+        function loadState() {
+            // Initialize with default data 
+            menuItems = getDefaultMenu();
+            inventory = getDefaultInventory();
+            currentCustomizations = {};
+            initializeApp();
+        }
+        
+        function getDefaultMenu() {
+            return [
+                { 
+                    id: 'menu-1', 
+                    name: 'Cheese Burger', 
+                    price: 70, 
+                    description: 'Juicy beef patty with cheese.', 
+                    imageUrl: 'https://s3-eu-central-1.amazonaws.com/www.burger-king.ng/wp-media-folder-burger-king-nigeria//home/ubuntu/wordpress/web/app/uploads/sites/12/Whopper-Sandw-1024x659.jpg', 
+                    ingredients: {'Beef Patties': 1, 'Buns': 1, 'Cheese Slices': 1},
+                    customizable: true
+                },
+                { 
+                    id: 'menu-2', 
+                    name: 'French Fries', 
+                    price: 100, 
+                    description: 'Crispy golden fries.', 
+                    imageUrl: 'https://latourangelle.com/cdn/shop/articles/hikynvl8pjkjqhvpnok6_1200x1200.jpg?v=1619198610', 
+                    ingredients: {'French Fries': 1},
+                    customizable: true,
+                    customOptions: ['Extra Salt', 'No Salt', 'Extra Crispy']
+                },
+                { 
+                    id: 'menu-3', 
+                    name: 'Soft Drink', 
+                    price: 50, 
+                    description: 'Refreshing cold soda.', 
+                    imageUrl: 'https://www.cannonlogistics.com.au/wp-content/uploads/2015/11/soft-drink-cans.jpg', 
+                    ingredients: {'Soda Syrup': 1},
+                    customizable: true,
+                    customOptions: ['Extra Ice', 'No Ice', 'Light Ice']
+                },
+                { 
+                    id: 'menu-4', 
+                    name: 'Combo Meal', 
+                    price: 250, 
+                    description: 'Burger + Fries + Drink.', 
+                    imageUrl: 'https://images.theconversation.com/files/410720/original/file-20210712-46002-1ku5one.jpg?ixlib=rb-4.1.0&rect=0%2C0%2C1000%2C696&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip', 
+                    ingredients: {'Beef Patties': 1, 'Buns': 1, 'Cheese Slices': 1, 'French Fries': 1, 'Soda Syrup': 1},
+                    customizable: true
+                }
+            ];
+        }
+        
+        function getDefaultInventory() {
+            return {
+                'Beef Patties': { current: 50, min: 25 },
+                'Buns': { current: 50, min: 25 },
+                'Cheese Slices': { current: 50, min: 25 },
+                'French Fries': { current: 50, min: 25 },
+                'Soda Syrup': { current: 50, min: 25 },
+                'Bacons': { current: 50, min: 25 },
+                'Onions': { current: 50, min: 25 },
+                'Pickles': { current: 50, min: 25 }
+            };
+        }
+
+        function initializeApp() {
+            renderCustomerMenu();
+            renderAdminPanels();
+            updateDashboardStats();
+            setupEventListeners();
+            initializeChart();
+        }
+
+        function renderAdminPanels() {
+            renderMenuManagement();
+            renderInventory();
+            renderOrders();
+        }
+
+        // -- Mobile sidebar functionality --
+        let sidebarOpen = false;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.getElementById('main-content');
+            
+            sidebarOpen = !sidebarOpen;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                if (sidebarOpen) {
+                    sidebar.classList.remove('hidden-mobile');
+                    sidebar.classList.add('mobile-open');
+                    overlay.classList.add('visible');
+                } else {
+                    sidebar.classList.add('hidden-mobile');
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('visible');
+                }
+            } else {
+                // Desktop behavior
+                if (sidebarOpen) {
+                    sidebar.classList.remove('hidden-mobile');
+                    mainContent.classList.remove('expanded');
+                } else {
+                    sidebar.classList.add('hidden-mobile');
+                    mainContent.classList.add('expanded');
+                }
+            }
+        }
+
+        // Close sidebar when clicking on navigation items on mobile
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768 && sidebarOpen) {
+                toggleSidebar();
+            }
+        }
+
+        // -- Event listeners --
+        function setupEventListeners() {
+            document.getElementById('admin-login-btn').addEventListener('click', showLoginView);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('place-order-btn').addEventListener('click', placeOrder);
+            document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); login(); });
+            document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                switchTab(item.dataset.tab); 
+                closeSidebarOnMobile();
+            }));
+            document.getElementById('show-history-btn').addEventListener('click', showOrderHistory);
+            document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
+            //restock button
+            document.getElementById('undo-restock-btn').addEventListener('click', undoRestock);
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    // Reset mobile sidebar state when switching to desktop
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebar-overlay');
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('visible');
+                    sidebarOpen = false;
+                }
+            });
+            
+            window.addEventListener('click', (event) => {
+                const bell = document.getElementById('notification-bell');
+                const dropdown = document.getElementById('notification-dropdown');
+                if (bell && dropdown && !bell.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // -- View management rendering --
+        function showCustomerView() { 
+            document.getElementById('customer-view').classList.remove('hidden'); 
+            document.getElementById('login-view').classList.add('hidden'); 
+            document.getElementById('admin-view').classList.add('hidden'); 
+        }
+        
+        function showLoginView() { 
+            document.getElementById('customer-view').classList.add('hidden'); 
+            document.getElementById('login-view').classList.remove('hidden'); 
+            document.getElementById('admin-view').classList.add('hidden'); 
+        }
+        
+        function showAdminView() { 
+            document.getElementById('customer-view').classList.add('hidden'); 
+            document.getElementById('login-view').classList.add('hidden'); 
+            document.getElementById('admin-view').classList.remove('hidden'); 
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById('current-tab-title').textContent = `${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
+        }
+
+        function renderCustomerMenu() {
+            const container = document.getElementById('menu-items-container');
+            container.innerHTML = menuItems.map(item => {
+                const isSoldOut = isItemSoldOut(item);
+                const customizationText = currentCustomizations[item.id] ? 
+                    ` (${currentCustomizations[item.id].length} customization(s))` : '';
+                    
+                return `
+                <div class="item ${isSoldOut ? 'sold-out' : ''}" data-id="${item.id}" data-price="${item.price}" data-name="${item.name}">
+                    ${isSoldOut ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
+                    <img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjExMiIgdmlld0JveD0iMCAwIDE0MCAxMTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iMTEyIiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjcwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNkI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZTwvdGV4dD4KPC9zdmc+'">
+                    <div class="item-details">
+                        <h3>${item.name}${customizationText}</h3>
+                        <p>${item.description}</p>
+                        <div class="quantity-controls">
+                            <button onclick="updateQuantity('${item.id}', -1)" ${isSoldOut ? 'disabled' : ''}>-</button>
+                            <input type="number" id="qty-${item.id}" value="0" min="0" readonly />
+                            <button onclick="updateQuantity('${item.id}', 1)" ${isSoldOut ? 'disabled' : ''}>+</button>
+                            
+                            ${item.customizable ? `
+                            <button onclick="showCustomizationModal('${item.id}')" 
+                                    class="customize-btn" 
+                                    ${isSoldOut ? 'disabled' : ''}>
+                                <i class="fas fa-cog mr-1"></i>Customize
+                            </button>` : ''}
+                        </div>
+                    </div>
+                    <p class="price">₱${item.price.toFixed(2)}</p>
+                </div>
+            `}).join('');
+        }
+
+        function renderOrders() {
+            const tableBody = document.getElementById('orders-table-body');
+            const orders = orderQueue.toArray();
+            if (orders.length === 0) { 
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">No active orders.</td></tr>'; 
+                return; 
+            }
+            
+            const priorityMap = { 1: 'High', 2: 'Medium', 3: 'Low' };
+            const priorityColor = { 1: 'bg-red-100 text-red-800', 2: 'bg-yellow-100 text-yellow-800', 3: 'bg-green-100 text-green-800' };
+            
+            tableBody.innerHTML = orders.map(order => `
+                <tr class="border-b">
+                    <td class="p-2">#${order.id}</td>
+                    <td class="p-2"><span class="text-xs px-2 py-1 rounded-full ${priorityColor[order.priority]}">${priorityMap[order.priority]}</span></td>
+                    <td class="p-2">${order.items.map(item => `${item.quantity}x ${item.name}${item.customizations ? ' (customized)' : ''}`).join(', ')}</td>
+                    <td class="p-2">₱${order.total.toFixed(2)}</td>
+                    <td class="p-2 capitalize">${order.status}</td>
+                    <td class="p-2 space-x-2">
+                        ${order.status === 'new' ? `<button onclick="updateOrderStatus('${order.id}', 'preparing')" title="Start Preparing" class="text-blue-500 hover:text-blue-700"><i class="fas fa-utensils"></i></button>` : ''}
+                        ${order.status === 'preparing' ? `<button onclick="updateOrderStatus('${order.id}', 'ready')" title="Mark as Ready" class="text-yellow-500 hover:text-yellow-700"><i class="fas fa-bell"></i></button>` : ''}
+                        ${order.status === 'ready' ? `<button onclick="updateOrderStatus('${order.id}', 'completed')" title="Complete Order" class="text-green-500 hover:text-green-700"><i class="fas fa-check-double"></i></button>` : ''}
+                        ${order.status === 'completed' ? `<button onclick="archiveOrder('${order.id}')" title="Archive Order" class="text-gray-500 hover:text-gray-700"><i class="fas fa-archive"></i></button>` : ''}
+                    </td>
+                </tr>`).join('');
+        }
+        
+        function renderMenuManagement() {
+            const grid = document.getElementById('menu-management-grid');
+            grid.innerHTML = menuItems.map(item => `
+                <div class="p-4 rounded-lg shadow border flex flex-col">
+                    <img src="${item.imageUrl}" class="w-full h-32 object-cover rounded mb-2" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDIwMCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZCNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1hZ2U8L3RleHQ+Cjwvc3ZnPg=='">
+                    <div class="flex-grow">
+                        <h4 class="font-bold">${item.name}</h4>
+                        <p>₱${item.price.toFixed(2)}</p>
+                        <p class="text-sm text-gray-600">${item.customizable ? 'Customizable' : 'Standard'}</p>
+                        <p class="text-xs text-gray-500">Ingredients: ${Object.keys(item.ingredients || {}).join(', ')}</p>
+                    </div>
+                    <div class="mt-4 space-x-2">
+                        <button onclick="showMenuItemModal('${item.id}')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+                        <button onclick="deleteMenuItem('${item.id}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            grid.innerHTML = Object.entries(inventory).map(([name, item]) => `
+                <div class="p-4 rounded-lg shadow border ${item.current <= item.min ? 'bg-red-100 border-red-300' : ''}">
+                    <h4 class="font-bold">${name}</h4>
+                    <p>Stock: <span class="font-semibold">${item.current}</span> (Min: ${item.min})</p>
+                    ${item.current <= item.min ? '<p class="text-red-600 text-sm font-semibold">⚠️ LOW STOCK</p>' : ''}
+                    <div class="mt-4 space-x-2">
+                        <button onclick="showInventoryEditModal('${name}')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+                        <button onclick="showRestockModal('${name}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">Restock</button>
+                    </div>
+                </div>`).join('');
+
+            
+             if (!document.getElementById('undo-restock-btn')) {
+        const undoBtn = document.createElement('button');
+        undoBtn.id = 'undo-restock-btn';
+        undoBtn.className = 'mt-6 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center justify-center';
+        undoBtn.innerHTML = '<i class="fas fa-undo mr-2"></i>Undo Last Restock';
+        
+        // Append the button after the inventory grid container
+        grid.parentElement.appendChild(undoBtn);
+        
+        // Attach event listener
+        undoBtn.addEventListener('click', undoRestock);
+    }
+        }
+
+        function login() { 
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin' && password === 'admin123') {
+                showAdminView();
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                showModal('Error', 'Invalid credentials. Please try again.');
+            }
+        }
+
+        function logout() { 
+            showCustomerView();
+        }
+
+        function togglePassword() { 
+            const passwordInput = document.getElementById('password'); 
+            const toggleBtn = document.getElementById('toggle-password-btn');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+
+        function forgotPassword() { 
+            showModal('Password Reset', 'Please contact your administrator to reset your password.<br><br><strong>Default Credentials:</strong><br>Username: admin<br>Password: admin123'); 
+        }
+
+        function updateQuantity(itemId, change) {
+            const input = document.getElementById(`qty-${itemId}`);
+            let value = parseInt(input.value) + change;
+            if (value < 0) value = 0;
+            input.value = value;
+            updateOrderSummary();
+        }
+
+        function updateOrderSummary() {
+            let total = 0;
+            let orderItemsHTML = '';
+            let isAnyItemSoldOut = false;
+            
+            menuItems.forEach(item => {
+                const qty = parseInt(document.getElementById(`qty-${item.id}`).value);
+                if (qty > 0) {
+                    if (isItemSoldOut(item)) {
+                        isAnyItemSoldOut = true;
+                    }
+                    total += qty * item.price;
+                    const customizationText = currentCustomizations[item.id] ? 
+                        ` (${currentCustomizations[item.id].join(', ')})` : '';
+                    orderItemsHTML += `<li>${qty} × ${item.name}${customizationText}</li>`;
+                }
+            });
+            
+            document.getElementById('order-list').innerHTML = orderItemsHTML || '<li>No items selected.</li>';
+            document.getElementById('order-total').textContent = total.toFixed(2);
+            document.getElementById('place-order-btn').disabled = total === 0 || isAnyItemSoldOut;
+        }
+
+        function placeOrder() {
+            let total = 0;
+            let totalItemsCount = 0;
+            const orderItems = [];
+            
+            menuItems.forEach(item => {
+                const qty = parseInt(document.getElementById(`qty-${item.id}`).value);
+                if (qty > 0) {
+                    const itemCustomizations = currentCustomizations[item.id] || [];
+                    orderItems.push({ 
+                        name: item.name, 
+                        quantity: qty, 
+                        ingredients: item.ingredients,
+                        customizations: itemCustomizations
+                    });
+                    total += qty * item.price;
+                    totalItemsCount += qty;
+                }
+            });
+            
+            if (orderItems.length === 0) return;
+
+            // Validate inventory
+            for (const item of orderItems) {
+                if (!item.ingredients) {
+                    showModal('Order Failed', `Menu item "${item.name}" has no ingredients defined. Cannot process order.`);
+                    return;
+                }
+                for (const [ingredient, qtyNeeded] of Object.entries(item.ingredients)) {
+                    if (!inventory[ingredient] || inventory[ingredient].current < qtyNeeded * item.quantity) {
+                        showModal('Order Failed', `Not enough ${ingredient} for ${item.name}. Available: ${inventory[ingredient]?.current || 0}, Needed: ${qtyNeeded * item.quantity}`);
+                        return;
+                    }
+                }
+            }
+
+            // Update inventory
+            orderItems.forEach(item => {
+                for (const [ingredient, qtyNeeded] of Object.entries(item.ingredients)) {
+                    inventory[ingredient].current -= qtyNeeded * item.quantity;
+                }
+            });
+
+            // Determine priority based on total items
+            let priority;
+            if (totalItemsCount >= 5) {
+                priority = 1; // High priority
+            } else if (totalItemsCount >= 3) {
+                priority = 2; // Medium priority
+            } else {
+                priority = 3; // Low priority
+            }
+
+            // Create order and add to queue
+            const order = { 
+                id: `ord-${orderCounter++}`, 
+                items: orderItems, 
+                total, 
+                status: 'new', 
+                priority,
+                timestamp: new Date()
+            };
+            orderQueue.enqueue(order);
+            
+            // Create corresponding task
+            const taskName = `Process Order #${order.id}`;
+            const taskDescription = `Prepare ${orderItems.map(item => `${item.quantity}x ${item.name}`).join(', ')}`;
+            taskManager.createTask(taskName, taskDescription, priority);
+            
+            const priorityMap = { 1: 'High', 2: 'Medium', 3: 'Low' };
+            showModal('Success', `Order #${order.id} placed successfully!<br><br><strong>Priority:</strong> ${priorityMap[priority]}<br><strong>Total:</strong> ₱${total.toFixed(2)}<br><br>Your order has been added to the queue.`);
+            
+            // Clear order form and customizations
+            menuItems.forEach(item => { 
+                document.getElementById(`qty-${item.id}`).value = 0; 
+            });
+            currentCustomizations = {};
+            updateOrderSummary();
+
+            renderAll();
+            saveState();
+            
+            taskManager.displayStatus();
+        }
+        
+        function renderAll() {
+            renderCustomerMenu();
+            renderOrders();
+            renderInventory();
+            renderMenuManagement();
+            updateDashboardStats();
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const orderNode = orderQueue.findNodeById(orderId);
+            if (orderNode) {
+                orderNode.data.status = newStatus;
+                
+                // If completed, process the corresponding task
+                if (newStatus === 'completed') {
+                    const processedTask = taskManager.processNextTask();
+                    if (processedTask) {
+                        console.log('Completed task:', processedTask.toString());
+                    }
+                }
+                
+                renderOrders();
+                updateDashboardStats();
+                saveState();
+                taskManager.displayStatus();
+            }
+        }
+
+        function archiveOrder(orderId) {
+            showModal('Archive Order', `Archive order #${orderId}? It will be moved to history.`, (confirmed) => {
+                if (confirmed) {
+                    const order = orderQueue.removeNodeById(orderId);
+                    if (order) {
+                        order.status = 'archived';
+                        order.archivedAt = new Date();
+                        orderHistory.push(order);
+                        renderOrders();
+                        updateDashboardStats();
+                        saveState();
+                    }
+                }
+            }, true);
+        }
+
+        function showOrderHistory() {
+            let historyHTML = orderHistory.map(order => 
+                `<li class="border-b pb-2 mb-2">
+                    <strong>#${order.id}</strong> - ${order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')} 
+                    <br><span class="text-sm text-gray-600">Total: ₱${order.total.toFixed(2)} | Archived: ${order.archivedAt ? new Date(order.archivedAt).toLocaleString() : 'N/A'}</span>
+                </li>`
+            ).join('');
+            
+            showModal('Order History', `<ul class="max-h-60 overflow-y-auto">${historyHTML || '<li>No completed orders.</li>'}</ul>`);
+        }
+
+        function updateDashboardStats() {
+            const allOrders = orderQueue.toArray();
+            const completedOrdersInQueue = allOrders.filter(order => order.status === 'completed');
+            
+            // Calculate total earnings from both completed orders in queue AND archived orders
+            const earningsFromQueue = completedOrdersInQueue.reduce((sum, order) => sum + order.total, 0);
+            const earningsFromHistory = orderHistory.reduce((sum, order) => sum + order.total, 0);
+            const totalEarnings = earningsFromQueue + earningsFromHistory;
+            
+            document.getElementById('total-earnings').textContent = `₱${totalEarnings.toFixed(2)}`;
+            document.getElementById('total-orders-count').textContent = allOrders.length;
+            document.getElementById('pending-orders-count').textContent = allOrders.filter(order => order.status !== 'completed').length;
+            document.getElementById('completed-orders-count').textContent = completedOrdersInQueue.length + orderHistory.length;
+            
+            renderNotifications();
+            updateChart();
+        }
+
+        function deleteMenuItem(itemId) {
+            showModal('Delete Item', 'Are you sure you want to delete this menu item?', (confirmed) => {
+                if(confirmed) {
+                    menuItems = menuItems.filter(item => item.id !== itemId);
+                    // Clear any customizations for this item
+                    delete currentCustomizations[itemId];
+                    saveState();
+                    renderCustomerMenu();
+                    renderMenuManagement();
+                }
+            }, true);
+        }
+
+        // -- Menu item modal --
+        function showMenuItemModal(itemId = null) {
+            const item = itemId ? menuItems.find(i => i.id === itemId) : null;
+            const title = item ? 'Edit Menu Item' : 'Add Menu Item';
+            
+            // Get available ingredients for selection
+            const availableIngredients = Object.keys(inventory);
+            const itemIngredients = item?.ingredients || {};
+            const customOptionsString = item && item.customOptions ? item.customOptions.join(', ') : 'Extra Cheese, No Onions, Extra Sauce';
+            
+            const formHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+                        <input type="text" id="itemName" placeholder="Enter item name" class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.name : ''}">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (₱)</label>
+                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" min="0" class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.price : ''}">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="itemDesc" placeholder="Describe the item" class="w-full p-2 border border-gray-300 rounded-md" rows="2">${item ? item.description : ''}</textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input type="text" id="itemImg" placeholder="https://..." class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.imageUrl : ''}">
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center mb-3">
+                            <input type="checkbox" id="itemCustomizable" class="mr-2" ${item && item.customizable ? 'checked' : ''}>
+                            <label class="text-sm font-medium text-gray-700">Allow Customization</label>
+                        </div>
+                        
+                        <div id="customOptionsContainer" class="mb-3 ${item && item.customizable ? '' : 'hidden'}">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Custom Options (comma-separated)</label>
+                            <input type="text" id="customOptions" placeholder="Extra Cheese, No Pickles, etc." class="w-full p-2 border border-gray-300 rounded-md" value="${customOptionsString}">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Required Ingredients</label>
+                        <div id="ingredientsContainer" class="ingredient-group">
+                            ${availableIngredients.map(ingredient => {
+                                const quantity = itemIngredients[ingredient] || 0;
+                                return `
+                                    <div class="ingredient-item">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="ingredient-checkbox mr-2" data-ingredient="${ingredient}" ${quantity > 0 ? 'checked' : ''}>
+                                            <span class="flex-1">${ingredient}</span>
+                                        </label>
+                                        <div class="ingredient-controls">
+                                            <label class="text-xs text-gray-500">Qty:</label>
+                                            <input type="number" class="ingredient-quantity" data-ingredient="${ingredient}" value="${quantity}" min="0" max="99" ${quantity > 0 ? '' : 'disabled'}>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Select ingredients and specify how many units are needed per item.</p>
+                    </div>
+                </div>
+            `;
+            
+            showModal(title, '', (confirmed) => {
+                if (confirmed) {
+                    // Collect ingredient data
+                    const ingredients = {};
+                    document.querySelectorAll('.ingredient-checkbox:checked').forEach(checkbox => {
+                        const ingredient = checkbox.dataset.ingredient;
+                        const quantityInput = document.querySelector(`.ingredient-quantity[data-ingredient="${ingredient}"]`);
+                        const quantity = parseInt(quantityInput.value) || 1;
+                        if (quantity > 0) {
+                            ingredients[ingredient] = quantity;
+                        }
+                    });
+
+                    if (Object.keys(ingredients).length === 0) {
+                        showModal('Error', 'Please select at least one ingredient for this menu item.');
+                        return;
+                    }
+
+                    const name = document.getElementById('itemName').value.trim();
+                    const price = parseFloat(document.getElementById('itemPrice').value);
+                    const description = document.getElementById('itemDesc').value.trim();
+                    const imageUrl = document.getElementById('itemImg').value.trim();
+
+                    if (!name || !price || price <= 0 || !description) {
+                        showModal('Error', 'Please fill in all required fields with valid values.');
+                        return;
+                    }
+
+                    const isCustomizable = document.getElementById('itemCustomizable').checked;
+                    const customOptionsValue = document.getElementById('customOptions').value.trim();
+                    const customOptions = isCustomizable && customOptionsValue ? 
+                        customOptionsValue.split(',').map(opt => opt.trim()).filter(opt => opt) : [];
+
+                    const newItem = {
+                        id: item ? item.id : `menu-${Date.now()}`,
+                        name,
+                        price,
+                        description,
+                        imageUrl: imageUrl || 'https://via.placeholder.com/200x128?text=No+Image',
+                        ingredients,
+                        customizable: isCustomizable,
+                        customOptions
+                    };
+                    
+                    if (item) {
+                        const index = menuItems.findIndex(i => i.id === itemId);
+                        menuItems[index] = newItem;
+                    } else {
+                        menuItems.push(newItem);
+                    }
+                    
+                    saveState();
+                    renderCustomerMenu();
+                    renderMenuManagement();
+                    showModal('Success', `Menu item "${newItem.name}" ${item ? 'updated' : 'added'} successfully!`);
+                }
+            }, true, formHTML);
+
+            // Add event listeners after modal is shown
+            setTimeout(() => {
+                const customizableCheckbox = document.getElementById('itemCustomizable');
+                const customOptionsContainer = document.getElementById('customOptionsContainer');
+                
+                if (customizableCheckbox && customOptionsContainer) {
+                    customizableCheckbox.addEventListener('change', () => {
+                        customOptionsContainer.classList.toggle('hidden', !customizableCheckbox.checked);
+                    });
+                }
+
+                // Handle ingredient checkbox changes
+                document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const ingredient = e.target.dataset.ingredient;
+                        const quantityInput = document.querySelector(`.ingredient-quantity[data-ingredient="${ingredient}"]`);
+                        
+                        if (e.target.checked) {
+                            quantityInput.disabled = false;
+                            if (quantityInput.value == 0) quantityInput.value = 1;
+                        } else {
+                            quantityInput.disabled = true;
+                            quantityInput.value = 0;
+                        }
+                    });
+                });
+            }, 100);
+        }
+        
+        function isItemSoldOut(item) {
+            if (!item.ingredients || Object.keys(item.ingredients).length === 0) return false;
+            for (const [ingredient, qtyNeeded] of Object.entries(item.ingredients)) {
+                if (!inventory[ingredient] || inventory[ingredient].current < qtyNeeded) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function showInventoryEditModal(itemName) {
+            const item = inventory[itemName];
+            const formHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Stock</label>
+                        <input type="number" id="invCurrent" class="w-full p-2 border border-gray-300 rounded-md" value="${item.current}" min="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Stock Level</label>
+                        <input type="number" id="invMin" class="w-full p-2 border border-gray-300 rounded-md" value="${item.min}" min="0">
+                    </div>
+                </div>
+            `;
+            showModal(`Edit ${itemName}`, '', (confirmed) => {
+                if (confirmed) {
+                    const newCurrent = parseInt(document.getElementById('invCurrent').value);
+                    const newMin = parseInt(document.getElementById('invMin').value);
+                    
+                    if (!isNaN(newCurrent) && !isNaN(newMin) && newCurrent >= 0 && newMin >= 0) {
+                        inventory[itemName].current = newCurrent;
+                        inventory[itemName].min = newMin;
+                        saveState();
+                        renderAll();
+                        showModal('Success', `${itemName} inventory updated successfully!`);
+                    } else {
+                        showModal('Error', 'Please enter valid numbers for stock levels.');
+                    }
+                }
+            }, true, formHTML);
+        }
+
+        function showRestockModal(itemName) {
+            const formHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity to Add</label>
+                        <input type="number" id="restockQty" placeholder="Enter quantity" class="w-full p-2 border border-gray-300 rounded-md" min="1">
+                        <p class="text-sm text-gray-600 mt-2">Current stock: <strong>${inventory[itemName].current}</strong></p>
+                    </div>
+                </div>
+            `;
+            showModal(`Restock ${itemName}`, '', (confirmed) => {
+                if (confirmed) {
+                    const qty = parseInt(document.getElementById('restockQty').value);
+                    if (!isNaN(qty) && qty > 0) {
+                        inventory[itemName].current += qty;
+                    // restockhistory
+                        restockHistory.push({ item: itemName, quantity: qty }); 
+                        
+                        saveState();
+                        renderAll();
+                        showModal('Success', `Added ${qty} units to ${itemName}. New stock: ${inventory[itemName].current}`);
+                    } else {
+                        showModal('Error', 'Please enter a valid quantity greater than 0.');
+                    }
+                }
+            }, true, formHTML);
+        }
+
+        // -- Stack hierarchy --
+        function showCustomizationModal(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item || !item.customizable) return;
+
+            // Initialize fresh customization stack for this session
+            customizationStack = new Stack();
+            customizationStack.push({ type: 'base', name: item.name, id: 'base' });
+
+            // Get predefined options or use defaults
+            const customOptions = item.customOptions || [
+                'Extra Cheese', 'Extra Bacon', 'No Onions', 'No Pickles', 
+                'Extra Sauce', 'No Sauce', 'Well Done', 'Extra Crispy'
+            ];
+
+            const formHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-lg font-semibold mb-2">Customizing: <span class="text-blue-600">${item.name}</span></p>
+                        <p class="text-sm text-gray-600">Select customizations to add to your order. Each selection builds on the previous ones using a stack system.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3 text-gray-800">Available Customizations:</h4>
+                        <div class="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                            ${customOptions.map((option, index) => `
+                                <div class="customization-option" onclick="addCustomization('${option}', ${index})" data-option="${option}">
+                                    <span>${option}</span>
+                                    <i class="fas fa-plus text-green-600"></i>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="customization-stack-display">
+                        <h4 class="font-semibold mb-2 text-gray-800">Build Order (Stack - Last In, First Out):</h4>
+                        <div id="customization-stack-list">
+                            <div class="stack-item base">
+                                <span>${item.name} (Base Item)</span>
+                                <span class="text-xs text-gray-600">Bottom of Stack</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Items are stacked on top of each other. Latest customization is on top and can be removed first.</p>
+                    </div>
+                </div>
+            `;
+            
+            showModal(`Customize ${item.name}`, '', (confirmed) => {
+                if (confirmed) {
+                    // Store customizations for this item
+                    const finalCustomizations = customizationStack.toArray()
+                        .filter(item => item.type === 'customization')
+                        .map(item => item.name)
+                        .reverse(); 
+                    
+                    if (finalCustomizations.length > 0) {
+                        currentCustomizations[itemId] = finalCustomizations;
+                        console.log(`Final customizations for ${item.name}:`, finalCustomizations);
+                        console.log('Customization Stack Processing Order:', customizationStack.toArray().map(item => item.name));
+                        
+                        showModal('Customization Complete!', 
+                            `Your ${item.name} will be prepared with:<br><br>` +
+                            `<strong>Customizations (in order applied):</strong><br>` +
+                            finalCustomizations.map((cust, i) => `${i + 1}. ${cust}`).join('<br>') +
+                            '<br><br>Please add the item to your order.'
+                        );
+                    } else {
+                        showModal('No Customizations', 'You can add this item as-is to your order.');
+                    }
+                    
+                    renderCustomerMenu(); // Update display to show customizations
+                    updateOrderSummary();
+                    
+                    // Demonstrate stack operations
+                    customizationStack.display();
+                }
+            }, true, formHTML);
+
+            updateCustomizationStackDisplay();
+        }
+
+        function addCustomization(customizationName, optionIndex) {
+            const customizationId = `custom-${Date.now()}-${optionIndex}`;
+            customizationStack.push({ 
+                type: 'customization', 
+                name: customizationName, 
+                id: customizationId 
+            });
+            
+            // Visual feedback
+            const optionElement = document.querySelector(`[data-option="${customizationName}"]`);
+            if (optionElement) {
+                optionElement.classList.add('selected');
+                setTimeout(() => {
+                    optionElement.classList.remove('selected');
+                }, 300);
+            }
+            
+            updateCustomizationStackDisplay();
+            console.log(`Added customization: ${customizationName}`);
+            customizationStack.display();
+        }
+
+        function updateCustomizationStackDisplay() {
+            const listElement = document.getElementById('customization-stack-list');
+            if (!listElement) return;
+
+            const stackArray = customizationStack.toArray();
+            
+            let html = '';
+            stackArray.forEach((item, index) => {
+                const isTop = index === 0;
+                const isBase = item.type === 'base';
+                html += `
+                    <div class="stack-item ${isBase ? 'base' : ''}" style="margin-bottom: ${isTop ? '8px' : '4px'}">
+                        <span>${item.name} ${isBase ? '(Base Item)' : ''}</span>
+                        <div class="flex items-center gap-2">
+                            ${isTop && !isBase ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">Top of Stack</span>' : ''}
+                            ${!isBase ? `<button class="remove-customization" onclick="removeLastCustomization()">Remove</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (stackArray.length === 1) {
+                html += '<p class="text-sm text-gray-500 text-center mt-2">No customizations added yet</p>';
+            }
+            
+            listElement.innerHTML = html;
+        }
+
+        function removeLastCustomization() {
+            const removed = customizationStack.pop();
+            if (removed && removed.type === 'customization') {
+                updateCustomizationStackDisplay();
+                console.log(`Removed customization: ${removed.name}`);
+                customizationStack.display();
+            }
+        }
+
+        // -- Notification --
+        function toggleNotifications() {
+            document.getElementById('notification-dropdown').classList.toggle('hidden');
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notification-list');
+            const count = document.getElementById('notification-count');
+            let notifications = [];
+            
+            const newOrders = orderQueue.toArray().filter(order => order.status === 'new');
+            const lowStockItems = Object.entries(inventory).filter(([name, item]) => item.current <= item.min);
+            
+            if (newOrders.length > 0) {
+                notifications.push(`⚡ You have ${newOrders.length} new order(s) awaiting preparation.`);
+            }
+            
+            if (lowStockItems.length > 0) {
+                notifications.push(`📦 ${lowStockItems.length} item(s) are low on stock: ${lowStockItems.map(([name]) => name).join(', ')}`);
+            }
+
+            // Task management notifications
+            const pendingTasks = taskManager.taskQueue.toArray().filter(task => !task.completed);
+            if (pendingTasks.length > 0) {
+                notifications.push(`✅ ${pendingTasks.length} task(s) pending in task management system.`);
+            }
+
+            list.innerHTML = notifications.length ? 
+                notifications.map(msg => `<p class="py-1">${msg}</p>`).join('') : 
+                '<p class="text-gray-500 text-center">No new notifications</p>';
+                
+            const totalNotifications = newOrders.length + lowStockItems.length;
+            count.textContent = totalNotifications;
+            count.style.display = totalNotifications > 0 ? 'flex' : 'none';
+        }
+        
+        function undoRestock() {
+            if (!restockHistory.isEmpty()) {   // ✅ use Stack's isEmpty()
+                const lastRestock = restockHistory.pop(); // ✅ get last restock action
+
+                if (inventory[lastRestock.item]) {
+                    // ✅ subtract from .current, not .quantity
+                    inventory[lastRestock.item].current -= lastRestock.quantity;
+
+                    // ✅ prevent going negative
+                    if (inventory[lastRestock.item].current < 0) {
+                        inventory[lastRestock.item].current = 0;
+                    }
+
+                    // ✅ refresh UI so you see the update
+                    renderAll();
+
+                    // ✅ optional feedback
+                    showModal(
+                        "Undo Restock",
+                        `Removed ${lastRestock.quantity} from ${lastRestock.item}.`
+                    );
+                }
+            } else {
+                showModal("Undo Restock", "No restock history found!");
+            }
+        }
+
+        // -- Chart --
+        function initializeChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['High Priority', 'Medium Priority', 'Low Priority'],
+                    datasets: [{
+                        label: '# of Orders',
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(16, 185, 129, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(220, 38, 38, 1)',
+                            'rgba(217, 119, 6, 1)',
+                            'rgba(5, 150, 105, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { stepSize: 1 } 
+                        } 
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (!salesChart) return;
+            const orders = orderQueue.toArray();
+            const priorityCounts = [0, 0, 0]; // High, Medium, Low
+            
+            orders.forEach(order => {
+                if (order.priority >= 1 && order.priority <= 3) {
+                    priorityCounts[order.priority - 1]++;
+                }
+            });
+            
+            salesChart.data.datasets[0].data = priorityCounts;
+            salesChart.update();
+        }
+
+        // -- Custom modal --
+        function showModal(title, message, callback = null, showCancel = false, formHTML = '') {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').innerHTML = message;
+            document.getElementById('modal-form-container').innerHTML = formHTML;
+            document.getElementById('modal-cancel-btn').style.display = showCancel ? 'inline-block' : 'none';
+            
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            const modal = document.getElementById('custom-modal');
+            
+            const confirmHandler = () => { 
+                if (callback) callback(true); 
+                hideModal(); 
+            };
+            const cancelHandler = () => { 
+                if (callback) callback(false); 
+                hideModal(); 
+            };
+            
+            // Remove previous event listeners to prevent stacking
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+            
+            const newConfirmBtn = document.getElementById('modal-confirm-btn');
+            const newCancelBtn = document.getElementById('modal-cancel-btn');
+            
+            newConfirmBtn.addEventListener('click', confirmHandler);
+            newCancelBtn.addEventListener('click', cancelHandler);
+            
+            modal.classList.add('visible');
+            
+            // Focus management
+            setTimeout(() => {
+                const firstInput = modal.querySelector('input, textarea, button');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function hideModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.remove('visible');
+            
+            // Clear form content after animation
+            setTimeout(() => {
+                document.getElementById('modal-form-container').innerHTML = '';
+            }, 300);
+        }
+
+        // Call demonstration on load
+        setTimeout(demonstrateDataStructures, 2000);
+
+        // -- Utility functions --
+        function formatCurrency(amount) {
+            return `₱${amount.toFixed(2)}`;
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleString();
+        }
+
+        // -- Error handling --
+        window.addEventListener('error', (event) => {
+            console.error('Application Error:', event.error);
+            showModal('System Error', 'An unexpected error occurred. Please refresh the page and try again.');
+        });
+
+        // -- Keyboard shortcuts --
+        document.addEventListener('keydown', (event) => {
+            // Admin panel shortcuts
+            if (event.ctrlKey || event.metaKey) {
+                switch(event.key) {
+                    case 'l':
+                        event.preventDefault();
+                        showLoginView();
+                        break;
+                    case 'h':
+                        event.preventDefault();
+                        showCustomerView();
+                        break;
+                }
+            }
+            
+            // ESC to close modal or sidebar
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('custom-modal');
+                if (modal.classList.contains('visible')) {
+                    hideModal();
+                } else if (window.innerWidth <= 768 && sidebarOpen) {
+                    toggleSidebar();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
