@@ -1124,7 +1124,7 @@
         let orderCounter = 1;
         let salesChart;
         let currentCustomizations = {}; // Store customizations per item
-
+        let restockHistory = new Stack();
         document.addEventListener('DOMContentLoaded', () => loadState());
 
         // -- Data persistence --
