@@ -49,6 +49,7 @@
             gap: 40px;
             text-align: left;
             position: relative;
+            transition: all 0.3s ease;
         }
         
         .item.sold-out {
@@ -570,33 +571,6 @@
             border-radius: 4px;
         }
 
-        .add-ingredient {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .add-ingredient:hover {
-            background: #059669;
-        }
-
-        .remove-ingredient {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .remove-ingredient:hover {
-            background: #dc2626;
-        }
     </style>
 </head>
 <body>
@@ -1132,6 +1106,7 @@
 
         document.addEventListener('DOMContentLoaded', () => loadState());
 
+        // -- Data persistence --
         function saveState() {
             const appState = {
                 menuItems: menuItems,
@@ -1725,92 +1700,35 @@
             }, true);
         }
 
+        // START OF REPLACED CODE
         function showMenuItemModal(itemId = null) {
             const item = itemId ? menuItems.find(i => i.id === itemId) : null;
             const title = item ? 'Edit Menu Item' : 'Add Menu Item';
-            
-            const availableIngredients = Object.keys(inventory);
-            const itemIngredients = item?.ingredients || {};
-            const customOptionsString = item && item.customOptions ? item.customOptions.join(', ') : '';
+            const customOptionsString = item && item.customOptions ? item.customOptions.join(', ') : 'Extra Cheese, No Onions, Extra Sauce';
             
             const formHTML = `
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
-                        <input type="text" id="itemName" placeholder="Enter item name" class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.name : ''}">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (₱)</label>
-                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" min="0" class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.price : ''}">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea id="itemDesc" placeholder="Describe the item" class="w-full p-2 border border-gray-300 rounded-md" rows="2">${item ? item.description : ''}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                        <input type="text" id="itemImg" placeholder="https://..." class="w-full p-2 border border-gray-300 rounded-md" value="${item ? item.imageUrl : ''}">
-                    </div>
-                    <div>
-                        <div class="flex items-center mb-3">
-                            <input type="checkbox" id="itemCustomizable" class="mr-2" ${item && item.customizable ? 'checked' : ''}>
-                            <label class="text-sm font-medium text-gray-700">Allow Customization</label>
-                        </div>
-                        <div id="customOptionsContainer" class="mb-3 ${item && item.customizable ? '' : 'hidden'}">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Custom Options (comma-separated)</label>
-                            <input type="text" id="customOptions" placeholder="Extra Cheese, No Pickles, etc." class="w-full p-2 border border-gray-300 rounded-md" value="${customOptionsString}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Required Ingredients</label>
-                        <div id="ingredientsContainer" class="ingredient-group">
-                            ${availableIngredients.map(ingredient => {
-                                const quantity = itemIngredients[ingredient] || 0;
-                                return `
-                                    <div class="ingredient-item">
-                                        <label class="flex items-center">
-                                            <input type="checkbox" class="ingredient-checkbox mr-2" data-ingredient="${ingredient}" ${quantity > 0 ? 'checked' : ''}>
-                                            <span class="flex-1">${ingredient}</span>
-                                        </label>
-                                        <div class="ingredient-controls">
-                                            <label class="text-xs text-gray-500">Qty:</label>
-                                            <input type="number" class="ingredient-quantity" data-ingredient="${ingredient}" value="${quantity}" min="0" max="99" ${quantity > 0 ? '' : 'disabled'}>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">Select ingredients and specify how many units are needed per item.</p>
-                    </div>
+                <input type="text" id="itemName" placeholder="Name" class="w-full p-2 border rounded mb-2" value="${item ? item.name : ''}">
+                <input type="number" id="itemPrice" placeholder="Price" step="0.01" class="w-full p-2 border rounded mb-2" value="${item ? item.price : ''}">
+                <input type="text" id="itemDesc" placeholder="Description" class="w-full p-2 border rounded mb-2" value="${item ? item.description : ''}">
+                <input type="text" id="itemImg" placeholder="Image URL" class="w-full p-2 border rounded mb-2" value="${item ? item.imageUrl : ''}">
+                
+                <div class="mb-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="itemCustomizable" class="mr-2" ${item && item.customizable ? 'checked' : ''}>
+                        <span class="font-semibold text-sm">Customizable Item</span>
+                    </label>
+                </div>
+                
+                <div id="customOptionsContainer" class="mb-2 ${item && item.customizable ? '' : 'hidden'}">
+                    <label class="font-semibold text-sm">Custom Options (comma-separated):</label>
+                    <input type="text" id="customOptions" placeholder="Extra Cheese, No Pickles, etc." class="w-full p-2 border rounded" value="${customOptionsString}">
                 </div>
             `;
             
             showModal(title, '', (confirmed) => {
                 if (confirmed) {
-                    const ingredients = {};
-                    document.querySelectorAll('.ingredient-checkbox:checked').forEach(checkbox => {
-                        const ingredient = checkbox.dataset.ingredient;
-                        const quantityInput = document.querySelector(`.ingredient-quantity[data-ingredient="${ingredient}"]`);
-                        const quantity = parseInt(quantityInput.value) || 1;
-                        if (quantity > 0) {
-                            ingredients[ingredient] = quantity;
-                        }
-                    });
-
-                    if (Object.keys(ingredients).length === 0) {
-                        showModal('Error', 'Please select at least one ingredient for this menu item.');
-                        return;
-                    }
-
-                    const name = document.getElementById('itemName').value.trim();
-                    const price = parseFloat(document.getElementById('itemPrice').value);
-                    const description = document.getElementById('itemDesc').value.trim();
-                    const imageUrl = document.getElementById('itemImg').value.trim();
-
-                    if (!name || isNaN(price) || price <= 0 || !description) {
-                        showModal('Error', 'Please fill in all required fields with valid values.');
-                        return;
-                    }
+                    // Ingredients will be an empty object by default as JSON input is removed.
+                    const ingredients = item ? item.ingredients : {}; 
 
                     const isCustomizable = document.getElementById('itemCustomizable').checked;
                     const customOptionsValue = document.getElementById('customOptions').value.trim();
@@ -1819,11 +1737,13 @@
 
                     const newItem = {
                         id: item ? item.id : `menu-${Date.now()}`,
-                        name, price, description,
-                        imageUrl: imageUrl || 'https://via.placeholder.com/200x128?text=No+Image',
-                        ingredients,
+                        name: document.getElementById('itemName').value,
+                        price: parseFloat(document.getElementById('itemPrice').value),
+                        description: document.getElementById('itemDesc').value,
+                        imageUrl: document.getElementById('itemImg').value,
+                        ingredients: ingredients,
                         customizable: isCustomizable,
-                        customOptions
+                        customOptions: customOptions
                     };
                     
                     if (item) {
@@ -1835,35 +1755,22 @@
                     
                     saveState();
                     renderAll();
-                    showModal('Success', `Menu item "${newItem.name}" ${item ? 'updated' : 'added'} successfully!`);
+                    console.log('Menu updated:', menuItems);
                 }
             }, true, formHTML);
 
+            // Add event listener for customizable checkbox
             setTimeout(() => {
-                const customizableCheckbox = document.getElementById('itemCustomizable');
-                const customOptionsContainer = document.getElementById('customOptionsContainer');
-                
-                if (customizableCheckbox && customOptionsContainer) {
-                    customizableCheckbox.addEventListener('change', () => {
-                        customOptionsContainer.classList.toggle('hidden', !customizableCheckbox.checked);
+                const checkbox = document.getElementById('itemCustomizable');
+                const container = document.getElementById('customOptionsContainer');
+                if (checkbox && container) {
+                    checkbox.addEventListener('change', () => {
+                        container.classList.toggle('hidden', !checkbox.checked);
                     });
                 }
-
-                document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', (e) => {
-                        const ingredient = e.target.dataset.ingredient;
-                        const quantityInput = document.querySelector(`.ingredient-quantity[data-ingredient="${ingredient}"]`);
-                        if (e.target.checked) {
-                            quantityInput.disabled = false;
-                            if (quantityInput.value == 0) quantityInput.value = 1;
-                        } else {
-                            quantityInput.disabled = true;
-                            quantityInput.value = 0;
-                        }
-                    });
-                });
             }, 100);
         }
+        // END OF REPLACED CODE
         
         function isItemSoldOut(item) {
             if (!item.ingredients || Object.keys(item.ingredients).length === 0) return false;
@@ -1988,7 +1895,7 @@
                             `Your ${item.name} will be prepared with:<br><strong>${finalCustomizations.join(', ')}</strong>`
                         );
                     } else {
-                        delete currentCustomizations[itemId]; 
+                        delete currentCustomizations[itemId]; // Clear if no customizations were made
                         showModal('No Customizations', 'You can add this item as-is to your order.');
                     }
                     
